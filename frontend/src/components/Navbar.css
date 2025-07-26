@@ -1,0 +1,141 @@
+.navbar {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-link {
+  background: none;
+  border: none;
+  color: #6b7280;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.navbar-link:hover {
+  color: #1f2937;
+  background-color: #f3f4f6;
+}
+
+.navbar-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown:hover .navbar-dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.navbar-dropdown-content {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 260px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  margin-top: 8px;
+}
+
+.profile-info {
+  padding: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 6px 0;
+  font-size: 16px;
+}
+
+.profile-email {
+  color: #6b7280;
+  margin: 0 0 6px 0;
+  font-size: 14px;
+}
+
+.profile-uid {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 12px;
+}
+
+.logout-btn {
+  width: 100%;
+  text-align: left;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 0 0 8px 8px;
+}
+
+.logout-btn:hover {
+  background-color: #fef2f2;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 16px;
+  }
+  
+  .navbar-title {
+    font-size: 24px;
+  }
+  
+  .navbar-menu {
+    gap: 12px;
+  }
+  
+  .navbar-link {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+} 
