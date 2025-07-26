@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// TODO: Replace this URL with your actual deployed backend URL from Render/Railway
-// Example: https://linkup-backend.onrender.com/api
-const API_BASE_URL = 'https://your-backend-url.onrender.com/api';
+// Local development API URL
+const API_BASE_URL = 'http://localhost:5000/api';
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -47,11 +46,14 @@ export const authAPI = {
 
 // Links endpoints
 export const linksAPI = {
-  getAll: () => api.get('/links'),
+  getAll: (params = {}) => api.get('/links', { params }),
   create: (linkData) => api.post('/links', linkData),
   update: (id, linkData) => api.put(`/links/${id}`, linkData),
   delete: (id) => api.delete(`/links/${id}`),
   getById: (id) => api.get(`/links/${id}`),
+  getCategories: () => api.get('/links/categories'),
+  getStats: () => api.get('/links/stats'),
+  toggleFavorite: (id) => api.patch(`/links/${id}/favorite`),
 };
 
 export default api; 

@@ -1,58 +1,91 @@
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = ({ user, onLogout }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Load dark mode preference from localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      setIsDarkMode(true);
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem('darkMode', newMode.toString());
+    
+    if (newMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
     onLogout();
+    setShowDropdown(false);
     navigate('/signup');
   };
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-brand">
-          <h1 className="navbar-title">LinkUp</h1>
+      <div className="nav-container">
+        <div className="nav-left">
+          <Link to="/" className="nav-brand">
+            <span className="brand-icon">🔗</span>
+            <span className="brand-text">LinkVault</span>
+          </Link>
         </div>
-        
-        <div className="navbar-menu">
+
+        <div className="nav-right">
+          {/* Dark Mode Toggle */}
+          <button 
+            className="theme-toggle"
+            onClick={toggleDarkMode}
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </button>
+
           {user ? (
-            <>
-              <button
-                onClick={() => navigate('/')}
-                className="navbar-link"
+            <div className="user-menu">
+              <button 
+                className="user-button"
+                onClick={() => setShowDropdown(!showDropdown)}
               >
-                Main
+                <span className="user-avatar">👤</span>
+                <span className="user-name">{user.uid}</span>
+                <span className="dropdown-arrow">▼</span>
               </button>
-              <div className="navbar-dropdown">
-                <button className="navbar-link">
-                  Profile
-                </button>
-                <div className="navbar-dropdown-content">
-                  <div className="profile-info">
-                    <p className="profile-name">{user.username}</p>
-                    <p className="profile-email">{user.email}</p>
-                    <p className="profile-uid">UID: {user.id}</p>
+              
+              {showDropdown && (
+                <div className="dropdown-menu">
+                  <div className="dropdown-header">
+                    <span className="user-email">{user.uid}</span>
                   </div>
-                  <button
+                  <div className="dropdown-divider"></div>
+                  <button 
+                    className="dropdown-item"
                     onClick={handleLogout}
-                    className="logout-btn"
                   >
+                    <span className="dropdown-icon">🚪</span>
                     Logout
                   </button>
                 </div>
-              </div>
-            </>
+              )}
+            </div>
           ) : (
-            <button
-              onClick={() => navigate('/signup')}
-              className="navbar-link"
-            >
+            <Link to="/signup" className="nav-link">
+              <span className="link-icon">🔑</span>
               Login
-            </button>
+            </Link>
           )}
         </div>
       </div>
