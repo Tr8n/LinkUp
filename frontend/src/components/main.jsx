@@ -16,6 +16,10 @@ const Main = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [contentTypeFilter, setContentTypeFilter] = useState('all');
+  const [complexityFilter, setComplexityFilter] = useState('all');
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [duplicateInfo, setDuplicateInfo] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -30,7 +34,7 @@ const Main = () => {
 
   useEffect(() => {
     fetchLinks();
-  }, [selectedCategory, searchTerm, sortBy, sortOrder]);
+  }, [selectedCategory, searchTerm, sortBy, sortOrder, contentTypeFilter, complexityFilter]);
 
   const fetchLinks = async () => {
     try {
@@ -45,6 +49,14 @@ const Main = () => {
         params.favorite = 'true';
       } else if (selectedCategory !== 'all') {
         params.category = selectedCategory;
+      }
+
+      if (contentTypeFilter !== 'all') {
+        params.contentType = contentTypeFilter;
+      }
+
+      if (complexityFilter !== 'all') {
+        params.complexity = complexityFilter;
       }
 
       const response = await linksAPI.getAll(params);
@@ -70,9 +82,40 @@ const Main = () => {
         await linksAPI.update(editingLink._id, linkData);
         setEditingLink(null);
       } else {
-        await linksAPI.create(linkData);
+        const response = await linksAPI.create(linkData);
+        
+        // Check for duplicate warning
+        if (response.data.duplicateInfo && response.data.duplicateInfo.isDuplicate) {
+          setDuplicateInfo(response.data.duplicateInfo);
+          setShowDuplicateWarning(true);
+          return;
+        }
       }
 
+      resetForm();
+      fetchLinks();
+    } catch (error) {
+      if (error.response?.status === 409) {
+        // Duplicate detected
+        setDuplicateInfo(error.response.data.duplicateInfo);
+        setShowDuplicateWarning(true);
+      } else {
+        setError('Failed to save link');
+        console.error('Error saving link:', error);
+      }
+    }
+  };
+
+  const handleDuplicateConfirm = async () => {
+    try {
+      const linkData = {
+        ...formData,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+      };
+      
+      await linksAPI.create(linkData);
+      setShowDuplicateWarning(false);
+      setDuplicateInfo(null);
       resetForm();
       fetchLinks();
     } catch (error) {
@@ -117,6 +160,19 @@ const Main = () => {
     }
   };
 
+  const handleReanalyze = async (id) => {
+    try {
+      await linksAPI.reanalyze(id);
+      // Wait a bit for analysis to complete, then refresh
+      setTimeout(() => {
+        fetchLinks();
+      }, 2000);
+    } catch (error) {
+      setError('Failed to re-analyze link');
+      console.error('Error re-analyzing link:', error);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -149,6 +205,27 @@ const Main = () => {
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const getContentTypeIcon = (contentType) => {
+    const icons = {
+      news: '📰',
+      tutorial: '📚',
+      documentation: '📖',
+      blog: '✍️',
+      video: '🎥',
+      image: '🖼️',
+      product: '🛍️',
+      general: '🔗',
+      unknown: '❓'
+    };
+    return icons[contentType] || icons.unknown;
+  };
+
+  const getComplexityColor = (complexity) => {
+    if (complexity < 0.3) return 'green';
+    if (complexity < 0.7) return 'orange';
+    return 'red';
   };
 
   return (
@@ -190,7 +267,7 @@ const Main = () => {
           <div className="search-box">
             <input
               type="text"
-              placeholder="Search links..."
+              placeholder="Search links, keywords, or content..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -207,6 +284,8 @@ const Main = () => {
               <option value="createdAt">Date Created</option>
               <option value="name">Name</option>
               <option value="category">Category</option>
+              <option value="aiAnalysis.readTime">Read Time</option>
+              <option value="aiAnalysis.complexity">Complexity</option>
             </select>
             
             <select 
@@ -216,6 +295,33 @@ const Main = () => {
             >
               <option value="desc">Descending</option>
               <option value="asc">Ascending</option>
+            </select>
+
+            <select 
+              value={contentTypeFilter} 
+              onChange={(e) => setContentTypeFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Types</option>
+              <option value="news">📰 News</option>
+              <option value="tutorial">📚 Tutorial</option>
+              <option value="documentation">📖 Documentation</option>
+              <option value="blog">✍️ Blog</option>
+              <option value="video">🎥 Video</option>
+              <option value="image">🖼️ Image</option>
+              <option value="product">🛍️ Product</option>
+              <option value="general">🔗 General</option>
+            </select>
+
+            <select 
+              value={complexityFilter} 
+              onChange={(e) => setComplexityFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">All Complexity</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="complex">Complex</option>
             </select>
           </div>
         </div>
@@ -332,6 +438,51 @@ const Main = () => {
           </div>
         )}
 
+        {/* Duplicate Warning Modal */}
+        {showDuplicateWarning && (
+          <div className="form-overlay">
+            <div className="form-modal">
+              <div className="form-header">
+                <h2>⚠️ Potential Duplicate Detected</h2>
+                <button className="close-btn" onClick={() => setShowDuplicateWarning(false)}>✕</button>
+              </div>
+              
+              <div className="duplicate-warning">
+                <p>This link appears to be similar to an existing link in your collection.</p>
+                <div className="similarity-info">
+                  <p><strong>Similarity Score:</strong> {Math.round(duplicateInfo.similarity * 100)}%</p>
+                  {duplicateInfo.similarLink && (
+                    <div className="similar-link">
+                      <p><strong>Similar to:</strong></p>
+                      <div className="similar-link-card">
+                        <h4>{duplicateInfo.similarLink.name}</h4>
+                        <p>{duplicateInfo.similarLink.url}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="form-actions">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowDuplicateWarning(false)} 
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={handleDuplicateConfirm} 
+                    className="btn btn-primary"
+                  >
+                    Add Anyway
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Links List */}
         <div className="links-container">
           {loading ? (
@@ -373,6 +524,13 @@ const Main = () => {
                         ✏️
                       </button>
                       <button
+                        onClick={() => handleReanalyze(link._id)}
+                        className="reanalyze-btn"
+                        title="Re-analyze with AI"
+                      >
+                        🤖
+                      </button>
+                      <button
                         onClick={() => handleDelete(link._id)}
                         className="delete-btn"
                         title="Delete link"
@@ -387,6 +545,9 @@ const Main = () => {
                     {link.description && (
                       <p className="link-description">{link.description}</p>
                     )}
+                    {link.aiAnalysis?.summary && (
+                      <p className="link-summary">{link.aiAnalysis.summary}</p>
+                    )}
                     <a 
                       href={link.url} 
                       target="_blank" 
@@ -396,6 +557,43 @@ const Main = () => {
                       {link.url}
                     </a>
                   </div>
+
+                  {/* AI Analysis Info */}
+                  {link.aiAnalysis && (
+                    <div className="ai-analysis">
+                      <div className="ai-stats">
+                        {link.aiAnalysis.readTime > 0 && (
+                          <span className="ai-stat read-time">
+                            ⏱️ {link.readTimeDisplay}
+                          </span>
+                        )}
+                        {link.aiAnalysis.contentType && link.aiAnalysis.contentType !== 'unknown' && (
+                          <span className="ai-stat content-type">
+                            {getContentTypeIcon(link.aiAnalysis.contentType)} {link.aiAnalysis.contentType}
+                          </span>
+                        )}
+                        {link.aiAnalysis.complexity > 0 && (
+                          <span className={`ai-stat complexity complexity-${getComplexityColor(link.aiAnalysis.complexity)}`}>
+                            📊 {link.complexityDisplay}
+                          </span>
+                        )}
+                        {link.aiAnalysis.wordCount > 0 && (
+                          <span className="ai-stat word-count">
+                            📝 {link.aiAnalysis.wordCount} words
+                          </span>
+                        )}
+                      </div>
+                      
+                      {link.aiAnalysis.keywords && link.aiAnalysis.keywords.length > 0 && (
+                        <div className="ai-keywords">
+                          <span className="keywords-label">Keywords:</span>
+                          {link.aiAnalysis.keywords.slice(0, 5).map((keyword, index) => (
+                            <span key={index} className="keyword">{keyword}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   {link.tags && link.tags.length > 0 && (
                     <div className="link-tags">
@@ -407,6 +605,11 @@ const Main = () => {
                   
                   <div className="link-footer">
                     <span className="link-date">Added: {formatDate(link.createdAt)}</span>
+                    {link.aiAnalysis?.lastAnalyzed && (
+                      <span className="analysis-date">
+                        Analyzed: {formatDate(link.aiAnalysis.lastAnalyzed)}
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}

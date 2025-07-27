@@ -15,7 +15,7 @@ router.get('/', linkController.getLinks);
 // Get link categories for sidebar (MUST come before /:id route)
 router.get('/categories', linkController.getLinkCategories);
 
-// Get statistics (MUST come before /:id route)
+// Get statistics
 router.get('/stats', linkController.getStats);
 
 // Get a single link by ID
@@ -23,6 +23,9 @@ router.get('/:id', linkController.getLinkById);
 
 // Update a link by ID
 router.put('/:id', linkController.updateLink);
+
+// Re-analyze a link with AI
+router.post('/:id/reanalyze', linkController.reanalyzeLink);
 
 // Toggle favorite status
 router.patch('/:id/favorite', linkController.toggleFavorite);

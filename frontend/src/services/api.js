@@ -44,7 +44,7 @@ export const authAPI = {
   login: (userData) => api.post('/users/login', userData),
 };
 
-// Links endpoints
+// Links endpoints with AI features
 export const linksAPI = {
   getAll: (params = {}) => api.get('/links', { params }),
   create: (linkData) => api.post('/links', linkData),
@@ -54,6 +54,7 @@ export const linksAPI = {
   getCategories: () => api.get('/links/categories'),
   getStats: () => api.get('/links/stats'),
   toggleFavorite: (id) => api.patch(`/links/${id}/favorite`),
+  reanalyze: (id) => api.post(`/links/${id}/reanalyze`),
 };
 
 export default api; 
