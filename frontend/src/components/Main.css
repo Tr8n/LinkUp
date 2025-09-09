@@ -76,14 +76,12 @@
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
 .search-box {
   position: relative;
   flex: 1;
   max-width: 400px;
-  min-width: 250px;
 }
 
 .search-input {
@@ -115,7 +113,6 @@
 .filters {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .filter-select {
@@ -127,7 +124,6 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 120px;
 }
 
 .filter-select:focus {
@@ -191,53 +187,6 @@
 .close-btn:hover {
   color: var(--text-primary);
   background: var(--bg-hover);
-}
-
-/* Duplicate Warning */
-.duplicate-warning {
-  padding: 1.5rem;
-}
-
-.duplicate-warning p {
-  margin-bottom: 1rem;
-  color: var(--text-secondary);
-}
-
-.similarity-info {
-  background: var(--bg-secondary);
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--border-color);
-}
-
-.similarity-info p {
-  margin-bottom: 0.5rem;
-}
-
-.similar-link {
-  margin-top: 1rem;
-}
-
-.similar-link-card {
-  background: var(--bg-primary);
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  margin-top: 0.5rem;
-}
-
-.similar-link-card h4 {
-  margin: 0 0 0.25rem 0;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-}
-
-.similar-link-card p {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 0.8rem;
-  word-break: break-all;
 }
 
 /* Form Styles */
@@ -457,7 +406,6 @@
 
 .favorite-btn,
 .edit-btn,
-.reanalyze-btn,
 .delete-btn {
   background: none;
   border: none;
@@ -478,11 +426,6 @@
 
 .edit-btn:hover {
   background: rgba(59, 130, 246, 0.1);
-}
-
-.reanalyze-btn:hover {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
 }
 
 .delete-btn:hover {
@@ -509,18 +452,6 @@
   line-height: 1.5;
 }
 
-.link-summary {
-  margin: 0 0 0.75rem 0;
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  font-style: italic;
-  background: var(--bg-primary);
-  padding: 0.5rem;
-  border-radius: 6px;
-  border-left: 3px solid var(--accent-color);
-}
-
 .link-url {
   color: var(--accent-color);
   text-decoration: none;
@@ -532,87 +463,6 @@
 .link-url:hover {
   color: var(--accent-hover);
   text-decoration: underline;
-}
-
-/* AI Analysis Section */
-.ai-analysis {
-  background: var(--bg-primary);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border: 1px solid var(--border-color);
-}
-
-.ai-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.ai-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-}
-
-.ai-stat.read-time {
-  color: #3b82f6;
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.ai-stat.content-type {
-  color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.1);
-}
-
-.ai-stat.complexity-easy {
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-}
-
-.ai-stat.complexity-medium {
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
-}
-
-.ai-stat.complexity-complex {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.ai-stat.word-count {
-  color: #6b7280;
-  background: rgba(107, 114, 128, 0.1);
-}
-
-.ai-keywords {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.keywords-label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.keyword {
-  background: var(--accent-color);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: 500;
 }
 
 .link-tags {
@@ -638,12 +488,9 @@
   align-items: center;
   padding-top: 1rem;
   border-top: 1px solid var(--border-color);
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
-.link-date,
-.analysis-date {
+.link-date {
   font-size: 0.8rem;
   color: var(--text-secondary);
 }
@@ -705,15 +552,6 @@
   .form-actions {
     flex-direction: column;
   }
-  
-  .ai-stats {
-    flex-direction: column;
-  }
-  
-  .link-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }
 
 @media (max-width: 480px) {
@@ -744,9 +582,5 @@
   
   .link-form {
     padding: 1rem;
-  }
-  
-  .ai-analysis {
-    padding: 0.75rem;
   }
 } 
