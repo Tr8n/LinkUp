@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/navbar';
-import Main from './components/Main';
-import SignupPage from './components/SignupPage';
-import './App.css';
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/navbar";
+import Main from "./components/main";
+import SignupPage from "./components/SignupPage";
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check for stored authentication data on app load
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
     }
-    
+
     setLoading(false);
   }, []);
 
@@ -30,9 +30,9 @@ function App() {
 
   const handleLogout = () => {
     setUser(null);
-    setToken('');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    setToken("");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
   // Protected Route component
@@ -67,23 +67,23 @@ function App() {
       <div className="app">
         <Navbar user={user} onLogout={handleLogout} />
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <ProtectedRoute>
                 <Main />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/signup" 
+          <Route
+            path="/signup"
             element={
               user ? (
                 <Navigate to="/" replace />
               ) : (
                 <SignupPage onLogin={handleLogin} />
               )
-            } 
+            }
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
