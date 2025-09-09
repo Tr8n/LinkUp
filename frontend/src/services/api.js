@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Local development API URL
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://linkup-1-ke2l.onrender.com/api';
 
 // Create axios instance with base configuration
 const api = axios.create({
